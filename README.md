@@ -30,5 +30,3 @@
 ```bash
 git clone https://github.com/Ecden1/campus-management-system.git
 cd campus-management-system
-git clone https://github.com/Ecden1/campus-management-system.git
-cd campus-management-system
