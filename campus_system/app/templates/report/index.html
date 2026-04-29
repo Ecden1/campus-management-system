@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}报表分析{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>报表分析</h2>
+            <div class="row">
+                {% if current_user.role != 'student' %}
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>班级报表</h4>
+                            <p>查看和导出班级学生信息报表</p>
+                            <a href="{{ url_for('report.class_report') }}" class="btn btn-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>成绩报表</h4>
+                            <p>查看和导出课程成绩报表</p>
+                            <a href="{{ url_for('report.grade_report') }}" class="btn btn-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

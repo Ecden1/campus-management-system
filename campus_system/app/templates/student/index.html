@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}学生管理{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>学生管理</h2>
+            {% if current_user.role != 'student' %}
+            <div class="float-right mb-3">
+                <a href="{{ url_for('student.add') }}" class="btn btn-primary">添加学生</a>
+                <a href="{{ url_for('student.import_students') }}" class="btn btn-success ml-2">批量导入</a>
+                <a href="{{ url_for('student.export_students') }}" class="btn btn-info ml-2">导出数据</a>
+            </div>
+            {% endif %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>学号</th>
+                        <th>姓名</th>
+                        <th>性别</th>
+                        <th>出生日期</th>
+                        <th>手机号</th>
+                        <th>班级</th>
+                        <th>学籍状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.gender }}</td>
+                        <td>{{ student.birthday.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ student.phone }}</td>
+                        <td>{{ student.class_.class_name }}</td>
+                        <td>{{ student.status.status if student.status else '未知' }}</td>
+                        <td>
+                            {% if current_user.role != 'student' %}
+                            <a href="{{ url_for('student.update', id=student.id) }}" class="btn btn-sm btn-primary">编辑</a>
+                            <a href="{{ url_for('student.delete', id=student.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('确定删除？');">删除</a>
+                            <a href="{{ url_for('status.update_status', student_id=student.student_id) }}" class="btn btn-sm btn-warning">学籍</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

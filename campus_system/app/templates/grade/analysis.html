@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}成绩分析{% endblock %}
+{% block content %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>成绩分析</h2>
+            
+            {% if current_user.role != 'student' %}
+            <!-- 教师端：班级展开栏目 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">各班级各科目统计</h4>
+                    <div id="accordion">
+                        {% for class_info in class_info_list %}
+                        <div class="card">
+                            <div class="card-header" id="heading{{ class_info.class_id }}">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ class_info.class_id }}" aria-expanded="true" aria-controls="collapse{{ class_info.class_id }}">
+                                        {{ class_info.class_name }} ({{ class_info.students|length }}人)
+                                    </button>
+                                    <span class="float-right">
+                                        <select class="form-control-sm" onchange="if(this.value) window.location.href='{{ url_for('grade.analysis') }}?class_id={{ class_info.class_id }}&student_id='+this.value;">
+                                            <option value="">选择学生</option>
+                                            {% for student in class_info.students %}
+                                            <option value="{{ student.student_id }}" {% if selected_student_id == student.student_id %}selected{% endif %}>{{ student.student_id }} - {{ student.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </span>
+                                </h5>
+                            </div>
+                            <div id="collapse{{ class_info.class_id }}" class="collapse" aria-labelledby="heading{{ class_info.class_id }}" data-parent="#accordion">
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>科目</th>
+                                                <th>平均成绩</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for course_name, stats in class_info.course_stats.items() %}
+                                            <tr>
+                                                <td>{{ course_name }}</td>
+                                                <td>{{ (stats.total / stats.count)|round(2) }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if selected_student %}
+            <!-- 学生个人成绩分析 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">{{ selected_student.name }} 的成绩分析</h4>
+                    <p><strong>学号:</strong> {{ selected_student.student_id }}</p>
+                    <p><strong>班级:</strong> {{ selected_student.class_.class_name }}</p>
+                    
+                    <!-- 学生个人成绩柱状图（小尺寸） -->
+                    <div style="height: 250px; width: 50%; margin: 0 auto;">
+                        <canvas id="studentGradeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if grades %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">总体统计</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="bg-primary text-white p-3 rounded">
+                                <strong>总课程数:</strong> {{ stats.total_courses }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-success text-white p-3 rounded">
+                                <strong>平均成绩:</strong> {{ stats.average_score|round(2) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-info text-white p-3 rounded">
+                                <strong>最高分:</strong> {{ stats.max_score|round(2) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-warning text-white p-3 rounded">
+                                <strong>最低分:</strong> {{ stats.min_score|round(2) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <div class="bg-danger text-white p-3 rounded">
+                                <strong>不及格人数:</strong> {{ stats.fail_count }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-secondary text-white p-3 rounded">
+                                <strong>及格率:</strong> {{ stats.pass_rate|round(1) }}%
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-purple text-white p-3 rounded">
+                                <strong>优秀率:</strong> {{ stats.excellent_rate|round(1) }}%
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="bg-teal text-white p-3 rounded">
+                                <strong>标准差:</strong> {{ stats.std_dev|round(2) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">成绩详情</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>学生姓名</th>
+                                <th>课程</th>
+                                <th>平时成绩</th>
+                                <th>期末成绩</th>
+                                <th>总评成绩</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                            <tr>
+                                <td>{{ grade.student.name if grade.student else '' }}</td>
+                                <td>{{ grade.course.course_name }}</td>
+                                <td>{{ grade.daily_score }}</td>
+                                <td>{{ grade.exam_score }}</td>
+                                <td>{{ grade.total_score }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <script>
+                {% if selected_student %}
+                // 学生个人成绩柱状图（小尺寸）
+                var studentCtx = document.getElementById('studentGradeChart').getContext('2d');
+                var studentChart = new Chart(studentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ grades|map(attribute='course.course_name')|list|tojson }},
+                        datasets: [{
+                            label: '平时成绩',
+                            data: {{ grades|map(attribute='daily_score')|list|tojson }},
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                        }, {
+                            label: '期末成绩',
+                            data: {{ grades|map(attribute='exam_score')|list|tojson }},
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                        }, {
+                            label: '总评成绩',
+                            data: {{ grades|map(attribute='total_score')|list|tojson }},
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                {% endif %}
+            </script>
+            {% else %}
+            <div class="alert alert-warning">
+                暂无成绩数据
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

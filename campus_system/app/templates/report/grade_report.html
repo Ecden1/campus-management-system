@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}成绩报表{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>成绩报表</h2>
+            {% if current_user.role == 'student' %}
+            <div class="mb-3">
+                <a href="{{ url_for('report.export_student_grades') }}" class="btn btn-success">导出个人所有成绩</a>
+            </div>
+            {% endif %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>课程代码</th>
+                        <th>课程名称</th>
+                        <th>学分</th>
+                        <th>学生人数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td>{{ course.course_code }}</td>
+                        <td>{{ course.course_name }}</td>
+                        <td>{{ course.credit }}</td>
+                        <td>{{ course.grades|length }}</td>
+                        <td>
+                            <a href="{{ url_for('report.export_grade_report', course_id=course.id) }}" class="btn btn-sm btn-primary">导出报表</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

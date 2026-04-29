@@ -1,0 +1,2 @@
+cd d:\Users\51360\Desktop\ABC\campus_system  #项目启动指令
+python run.py

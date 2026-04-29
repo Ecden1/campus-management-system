@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}班级报表{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>班级报表</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>班级名称</th>
+                        <th>年级</th>
+                        <th>专业</th>
+                        <th>学生人数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class_ in classes %}
+                    <tr>
+                        <td>{{ class_.class_name }}</td>
+                        <td>{{ class_.grade }}</td>
+                        <td>{{ class_.major }}</td>
+                        <td>{{ class_.students|length }}</td>
+                        <td>
+                            {% if current_user.role != 'student' %}
+                            <a href="{{ url_for('report.export_class_report', class_id=class_.id) }}" class="btn btn-sm btn-primary">导出报表</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

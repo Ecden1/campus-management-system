@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="card-title">教师管理</h4>
+            <a href="{{ url_for('teacher.add') }}" class="btn btn-primary float-right">添加教师</a>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>教师账号</th>
+                        <th>教师姓名</th>
+                        <th>教授科目</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.teacher_id }}</td>
+                        <td>{{ teacher.name }}</td>
+                        <td>{{ teacher.course.course_name if teacher.course else '未分配' }}</td>
+                        <td>
+                            <a href="{{ url_for('teacher.update', id=teacher.id) }}" class="btn btn-sm btn-primary">编辑</a>
+                            <a href="{{ url_for('teacher.delete', id=teacher.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('确定要删除该教师吗？')">删除</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

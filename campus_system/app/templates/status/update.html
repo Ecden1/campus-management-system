@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}更新学籍状态{% endblock %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>更新学籍状态</h4>
+                    <p>学生：{{ student.student_id }} - {{ student.name }}</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.status.label(class="form-control-label") }}
+                            {{ form.status(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.change_reason.label(class="form-control-label") }}
+                            {{ form.change_reason(class="form-control", rows=3) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.submit(class="btn btn-primary btn-block") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

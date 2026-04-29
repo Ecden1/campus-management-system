@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}首页{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>欢迎使用微校园学生信息管理系统</h2>
+            <div class="alert alert-info mt-4">
+                <h4>系统功能概览</h4>
+                <ul>
+                    <li><strong>学生档案管理</strong> - 学生信息的增删改查、批量导入导出</li>
+                    <li><strong>班级管理</strong> - 班级信息维护、班级与学生关联</li>
+                    <li><strong>课程管理</strong> - 课程信息维护、学分管理</li>
+                    <li><strong>成绩管理</strong> - 成绩录入、校验、计算、锁定与统计</li>
+                    <li><strong>学籍异动</strong> - 学籍状态变更（休学、复学、转学、退学、毕业）</li>
+                    <li><strong>报表分析</strong> - 班级报表、成绩报表导出</li>
+                    <li><strong>安全审计</strong> - 操作日志记录与查询</li>
+                </ul>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">学生总数</h5>
+                            <p class="card-text" style="font-size: 2rem;">{{ students_count }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">班级数量</h5>
+                            <p class="card-text" style="font-size: 2rem;">{{ classes_count }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">课程数量</h5>
+                            <p class="card-text" style="font-size: 2rem;">{{ courses_count }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">成绩记录</h5>
+                            <p class="card-text" style="font-size: 2rem;">{{ grades_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

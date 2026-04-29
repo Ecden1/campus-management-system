@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}安全审计{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>安全审计</h2>
+            #前端HTML模板中的搜索表单（当点击查询按钮时）通过GET请求发送数据到后端Flask应用的search视图函数：
+            <form method="GET" action="{{ url_for('audit.search') }}" class="form-inline mb-3">
+                <div class="form-group mr-2">
+                    <input type="date" name="start_time" class="form-control" placeholder="开始时间">
+                </div>
+                <div class="form-group mr-2">
+                    <input type="date" name="end_time" class="form-control" placeholder="结束时间">
+                </div>
+                <div class="form-group mr-2">
+                    <select name="operation_type" class="form-control">      # 以下为展示的表格数据
+                        <option value="">操作类型</option>
+                        <option value="login">登录</option>
+                        <option value="logout">退出</option>
+                        <option value="add_student">添加学生</option>
+                        <option value="update_student">更新学生</option>
+                        <option value="delete_student">删除学生</option>
+                        <option value="add_grade">添加成绩</option>
+                        <option value="update_grade">更新成绩</option>
+                        <option value="lock_grade">锁定成绩</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">查询</button>
+            </form>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>操作时间</th>
+                        <th>操作人</th>
+                        <th>操作类型</th>
+                        <th>操作内容</th>
+                        <th>IP地址</th>
+                        <th>操作结果</th>
+                    </tr>
+                </thead>
+                <tbody>
+                #后端响应后展示结果
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.operation_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>{{ log.user_id }}</td>
+                        <td>{{ log.operation_type }}</td>
+                        <td>{{ log.operation_content }}</td>
+                        <td>{{ log.operation_ip }}</td>
+                        <td>{{ '成功' if log.operation_result == 'success' else '失败' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

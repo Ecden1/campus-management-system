@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}成绩管理{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{% if current_user.role == 'student' %}查看成绩{% else %}成绩管理{% endif %}</h2>
+            {% if current_user.role != 'student' %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">班级选择</h4>
+                    <form method="GET" action="{{ url_for('grade.index') }}">
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="class_id">选择班级</label>
+                                    <select class="form-control" id="class_id" name="class_id" onchange="this.form.submit()">
+                                        <option value="">-- 请选择班级 --</option>
+                                        {% for class_ in classes %}
+                                        <option value="{{ class_.id }}" {% if selected_class_id == class_.id %}selected{% endif %}>{{ class_.class_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% if selected_class_id %}
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="student_id">选择学生</label>
+                                    <select class="form-control" id="student_id" name="student_id" onchange="this.form.submit()">
+                                        <option value="">-- 请选择学生 --</option>
+                                        {% for student in selected_class_students %}
+                                        <option value="{{ student.student_id }}" {% if selected_student_id == student.student_id %}selected{% endif %}>{{ student.student_id }} - {{ student.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div class="d-flex">
+                                        <a href="{{ url_for('grade.add') }}" class="btn btn-primary mr-2">添加成绩</a>
+                                        <a href="{{ url_for('grade.analysis') }}" class="btn btn-info">成绩分析</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>学号</th>
+                        <th>姓名</th>
+                        <th>课程</th>
+                        <th>平时成绩</th>
+                        <th>期末成绩</th>
+                        <th>总评成绩</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.student_id }}</td>
+                        <td>{{ grade.student.name if grade.student else '' }}</td>
+                        <td>{{ grade.course.course_name if grade.course else '' }}</td>
+                        <td>{{ grade.daily_score }}</td>
+                        <td>{{ grade.exam_score }}</td>
+                        <td>{{ grade.total_score }}</td>
+                        <td>{{ '已锁定' if grade.status == 'locked' else '未锁定' }}</td>
+                        <td>
+                            {% if current_user.role != 'student' and selected_student_id %}
+                            {% if grade.status == 'unlocked' %}
+                                <a href="{{ url_for('grade.update', id=grade.id) }}" class="btn btn-sm btn-primary">编辑</a>
+                                <a href="{{ url_for('grade.delete', id=grade.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('确定删除？');">删除</a>
+                                <a href="{{ url_for('grade.lock', id=grade.id) }}" class="btn btn-sm btn-warning">锁定</a>
+                            {% else %}
+                                <a href="{{ url_for('grade.unlock', id=grade.id) }}" class="btn btn-sm btn-success">解锁</a>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

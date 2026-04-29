@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}学籍管理{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>学籍管理</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>学号</th>
+                        <th>姓名</th>
+                        <th>学籍状态</th>
+                        <th>变更原因</th>
+                        <th>变更日期</th>
+                        <th>操作人</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status in statuses %}
+                    <tr>
+                        <td>{{ status.student_id }}</td>
+                        <td>{{ status.student.name if status.student else '' }}</td>
+                        <td>{{ status.status }}</td>
+                        <td>{{ status.change_reason }}</td>
+                        <td>{{ status.change_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ status.operator_id }}</td>
+                        <td>
+                            {% if current_user.role == 'admin' %}
+                            <a href="{{ url_for('status.update_status', student_id=status.student_id) }}" class="btn btn-sm btn-primary">更新</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

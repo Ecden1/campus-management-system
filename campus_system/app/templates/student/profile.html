@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}个人信息{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2>个人信息</h2>
+            
+            {% if student %}
+            {% if not editing %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>学号:</strong> {{ student.student_id }}</p>
+                            <p><strong>姓名:</strong> {{ student.name }}</p>
+                            <p><strong>性别:</strong> {{ student.gender }}</p>
+                            <p><strong>出生日期:</strong> {{ student.birthday.strftime('%Y-%m-%d') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>身份证号:</strong> {{ student.id_card }}</p>
+                            <p><strong>手机号:</strong> {{ student.phone }}</p>
+                            <p><strong>地址:</strong> {{ student.address }}</p>
+                            <p><strong>班级:</strong> {{ student.class_.class_name }}</p>
+                            <p><strong>学籍状态:</strong> {{ student.status.status if student.status else '未知' }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('student.edit_profile') }}" class="btn btn-primary">编辑信息</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('student.edit_profile') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>学号</label>
+                                    <input type="text" class="form-control" value="{{ student.student_id }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>姓名</label>
+                                    <input type="text" class="form-control" value="{{ student.name }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>性别</label>
+                                    <input type="text" class="form-control" value="{{ student.gender }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    {{ form.birthday.label }}
+                                    {{ form.birthday(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form.id_card.label }}
+                                    {{ form.id_card(class="form-control") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.phone.label }}
+                                    {{ form.phone(class="form-control") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.address.label }}
+                                    {{ form.address(class="form-control") }}
+                                </div>
+                                <div class="form-group">
+                                    <label>班级</label>
+                                    <input type="text" class="form-control" value="{{ student.class_.class_name }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">保存修改</button>
+                            <a href="{{ url_for('student.profile') }}" class="btn btn-secondary ml-2">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="alert alert-warning">
+                未找到个人信息
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
